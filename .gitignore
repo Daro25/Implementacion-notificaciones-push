@@ -1,0 +1,35 @@
+config.json
+# --- Dependencias de PHP (Composer) ---
+# Nunca subas la carpeta vendor, se genera con 'composer install'
+/vendor/
+composer.phar
+
+# --- Configuración Sensible (¡MUY IMPORTANTE!) ---
+# Si usas un archivo .env para tus credenciales de BD y llaves VAPID
+.env
+# Si guardas tus llaves VAPID en archivos separados
+private_key.pem
+public_key.pem
+# Si tienes un archivo de config con contraseñas
+config.local.php
+
+# --- Archivos del Sistema Operativo ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Archivos de Editores / IDEs ---
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# --- Logs y Temporales ---
+*.log
+/temp/
+/cache/
+
+# --- Base de Datos ---
+# No subas respaldos SQL pesados al repositorio
+*.sql
+*.gz
