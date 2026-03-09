@@ -1,0 +1,17 @@
+{
+    "name": "windo/implementacion-notificaciones-push",
+    "autoload": {
+        "psr-4": {
+            "Windo\\ImplementacionNotificacionesPush\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Oscar Alexis Dávila Reyes",
+            "email": "104913466+Daro25@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "minishlink/web-push": "^10.0"
+    }
+}

@@ -1,16 +1,14 @@
-//Service Worker
 self.addEventListener('push', function(event) {
-    if (!(self.Notification && self.Notification.permission === 'granted')) {
-        return;
-    }
+    const data = event.data ? event.data.json() : { title: 'Nuevo aviso', body: 'Revisa las novedades.' };
 
-    const data = event.data ? event.data.json() : {};
-    const title = data.title || 'Nueva Notificación';
     const options = {
-        body: data.body || 'Tienes un nuevo mensaje.',
-        icon: '/img/icon.png', // Ruta a tu icono
-        badge: '/img/badge.png' // Ruta a tu badge
+        body: data.body,
+        icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827347.png', // Puedes cambiar esto
+        vibrate: [100, 50, 100],
+        data: { dateOfArrival: Date.now() }
     };
 
-    event.waitUntil(self.registration.showNotification(title, options));
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
 });
