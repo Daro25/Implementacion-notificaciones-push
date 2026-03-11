@@ -33,3 +33,6 @@ desktop.ini
 # No subas respaldos SQL pesados al repositorio
 *.sql
 *.gz
+
+private_key.pem
+public_key.pem
