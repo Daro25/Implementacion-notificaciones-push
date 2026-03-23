@@ -39,7 +39,7 @@ try {
     $mensaje = $requestData['mensaje'] ?? '';
     $icon    = $requestData['icon'] ?? 'https://cdn-icons-png.flaticon.com/512/1827/1827347.png';
     $url     = $requestData['url'] ?? 'http://localhost/Implementacion-notificaciones-push/';
-
+    $usuario_id = $requestData['usuario_id'] ?? false;
     // Validar que el mensaje no esté vacío
     if (empty($mensaje)) {
         echo json_encode(['success' => false, 'error' => 'El contenido del mensaje es requerido.']);
@@ -72,7 +72,12 @@ try {
     $webPush = new WebPush($auth);
 
     // 5. Obtener suscriptores de la BD
-    $query = "SELECT endpoint, p256dh, auth FROM push_subscriptions";
+    $query = '';
+    if ($usuario_id) {
+        $query = "SELECT endpoint, p256dh, auth FROM push_subscriptions2 WHERE user_id = ".$usuario_id;
+    } else {
+        $query = "SELECT endpoint, p256dh, auth FROM push_subscriptions2";
+    }
     $result = mysqli_query($conex, $query);
 
     $totalEnviados = 0;
@@ -97,7 +102,7 @@ try {
             $enviadosConExito++;
         } else {
             // Si falla (token expirado o revocado), lo borramos
-            $stmtDel = $conex->prepare("DELETE FROM push_subscriptions WHERE endpoint = ?");
+            $stmtDel = $conex->prepare("DELETE FROM push_subscriptions2 WHERE endpoint = ?");
             $stmtDel->bind_param("s", $endpoint);
             $stmtDel->execute();
             $stmtDel->close();

@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['mensaje'])) {
         'url'   => $url
     ]);
 
-    $stmt = $pdo->query("SELECT * FROM push_subscriptions");
+    $stmt = $pdo->query("SELECT * FROM push_subscriptions2");
     $subs = $stmt->fetchAll();
 
     foreach ($subs as $row) {
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['mensaje'])) {
     foreach ($webPush->flush() as $report) {
         if (!$report->isSuccess()) {
             $endpoint = $report->getRequest()->getUri()->__toString();
-            $del = $pdo->prepare("DELETE FROM push_subscriptions WHERE endpoint = ?");
+            $del = $pdo->prepare("DELETE FROM push_subscriptions2 WHERE endpoint = ?");
             $del->execute([$endpoint]);
         }
     }

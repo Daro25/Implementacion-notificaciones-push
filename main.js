@@ -18,16 +18,42 @@ async function subscribeUser() {
             await navigator.serviceWorker.register('sw.js');
             const registration = await navigator.serviceWorker.ready;
             
-            console.log('Service Worker activo y listo para suscribir');
+            console.log('1. Service Worker activo y listo.');
+            
+            // VERIFICACIÓN CLAVE: ¿Tenemos la llave y el permiso?
+            console.log('2. Mi clave VAPID es:', VAPID_PUBLIC_KEY);
+            console.log('3. El estado del permiso en el navegador es:', Notification.permission);
 
-            // Intentamos la suscripción usando la función de arriba
-            const subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-            });
+            if (Notification.permission === 'denied') {
+                alert('Las notificaciones están bloqueadas en tu navegador. Haz clic en el candado de la barra de direcciones para permitirlas.');
+                return; // Detenemos la ejecución aquí
+            }
 
+            console.log('4. Revisando si hay suscripciones atascadas...');
+    
+            // Buscar y destruir cualquier suscripción fantasma previa
+            const existingSub = await registration.pushManager.getSubscription();
+            if (existingSub) {
+                console.log('¡Suscripción fantasma encontrada! Borrando...');
+                await existingSub.unsubscribe();
+                console.log('Limpieza completada.');
+            }
+
+            console.log('5. Solicitando token fresco a Google/Mozilla...');
+
+            // Intentamos la suscripción
+            const subscription = await Promise.race([
+                registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                }),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error("Timeout en subscribe")), 5000)
+                )
+            ]);
+            console.log('6. ¡Suscripción exitosa! Token obtenido.');
             // Enviamos el token al servidor PHP
-            const response = await fetch('save_subscription.php', {
+            const response = await fetch('./save_subscription.php', {
                 method: 'POST',
                 body: JSON.stringify(subscription),
                 headers: { 'Content-Type': 'application/json' }
@@ -38,13 +64,13 @@ async function subscribeUser() {
             if (result.status === "success" || result.success === true) {
                 alert('¡Te has suscrito con éxito! Ya puedes recibir notificaciones.');
             } else {
-                console.log(result);
-                console.error('Error en el servidor:', result.message?? result.error?? 'Error desconocido');
+                //console.log(result);
+                console.error('Error en el servidor:', result.message || result.error || 'Error desconocido');
             }
 
-        } catch (e) {
-            console.error('Error de suscripción:', e);
-            alert('Error al suscribir: ' + e.message);
+        } catch (error) {
+            console.error('❌ ERROR GRAVE al suscribir:', error);
+            alert('Fallo al suscribir: ' + error.message);
         }
     } else {
         alert('Tu navegador no soporta notificaciones push.');
