@@ -15,7 +15,7 @@ async function subscribeUser() {
     if ('serviceWorker' in navigator) {
         try {
             // Esperamos a que el Service Worker esté listo
-            await navigator.serviceWorker.register('sw.js');
+            await navigator.serviceWorker.register('https://ljusstudie.site/iMplementacion-notificaciones-push/sw.js');
             const registration = await navigator.serviceWorker.ready;
             
             console.log('1. Service Worker activo y listo.');
